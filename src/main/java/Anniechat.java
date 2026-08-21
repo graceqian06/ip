@@ -23,28 +23,35 @@ public class Anniechat {
                 int len = storage.size();
                 System.out.println("a glimpse of ur tasks :)");
                 for (int i = 0; i < len; i ++){
-                        System.out.println(i+1 + "."+ storage.get(i).statusIcon() + storage.get(i).getTaskDesc());
+                        Task t = storage.get(i);
+                        System.out.println(i+1 + "." + t.taskIcon() + t.statusIcon() + t.getTaskDesc());
                 }
             } else if (echo.startsWith("mark ")) {
-                System.out.println(" Nice! I've marked this task as done: \n");
                 int user_number = Integer.parseInt(echo.substring(5));
                 int sys_number = user_number -1;
                 Task t = storage.get(sys_number);
                 t.markDone();
-                System.out.println( t.statusIcon() + t.getTaskDesc());
 
             }
             else if (echo.startsWith("unmark ")) {
-                System.out.println(" OK, I've marked this task as not done yet: \n");
                 int user_number = Integer.parseInt(echo.substring(7));
                 int sys_number = user_number - 1;
                 Task t = storage.get(sys_number);
                 t.markUndone();
-                System.out.println( t.statusIcon() + t.getTaskDesc());
+            } else if (echo.startsWith("todo ")) {
+                Task t = new ToDo(echo);
+                storage.add(t);
+            }
+            else if (echo.startsWith("deadline ")) {
+                Task t = new Deadline(echo);
+                storage.add(t);
+            }
+            else if (echo.startsWith("event ")) {
+                Task t = new Event(echo);
+                storage.add(t);
             }
             else {
-                System.out.println("added: "+echo);
-                Task t = new Task(echo);
+                Task t = new ToDo(echo);
                 storage.add(t);
             }
         }
