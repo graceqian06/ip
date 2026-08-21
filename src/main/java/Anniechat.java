@@ -4,8 +4,18 @@ import java.util.Scanner;
 
 public class Anniechat {
     public static void main(String[] args) {
-        System.out.println("Hello! I'm Anniechat.");
+        String greet = "Hello! I'm Anniechat.";
+        String exit = "Byeee! Cya again soon!";
+        System.out.println(greet);
         System.out.println("What can I do for you?");
-        System.out.println("Byeee! Cya again soon!")
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            String echo = scanner.nextLine();
+            if (echo.equals("bye")) {
+                System.out.println(exit);
+            } else {
+                System.out.println(echo);
+            }
+        }
     }
 }
