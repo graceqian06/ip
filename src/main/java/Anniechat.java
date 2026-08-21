@@ -61,8 +61,16 @@ public class Anniechat {
                 };
                 Task t = new Event(echo);
                 storage.add(t);
-            }
-            else {
+            } else if (echo.startsWith("delete ")) {
+                int user_number = Integer.parseInt(echo.substring(7));
+                int sys_number = user_number - 1;
+                Task t = storage.get(sys_number);
+                storage.remove(t);
+                Task.removeTask();
+                System.out.println("Noted. I've removed this task:");
+                System.out.println(t.taskIcon() + t.statusIcon() + t.getTaskDesc());
+                System.out.println("Now you have " + Task.taskCount() + " tasks in the list.");
+            } else {
                 System.out.println("Sowwy idk what that means :(");
             }
         }

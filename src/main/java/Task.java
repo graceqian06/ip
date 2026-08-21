@@ -8,6 +8,15 @@ public abstract class Task {
         taskCount ++;
         System.out.println( "Got it. I've added this task: \n");
     }
+
+    public static int taskCount() {
+        return taskCount;
+    }
+    public static void removeTask(){
+        taskCount--;
+    }
+
+
     public String statusIcon() {
         return isDone? "[x]" :"[ ]";
     }
