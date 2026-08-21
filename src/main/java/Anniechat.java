@@ -38,6 +38,13 @@ public class Anniechat {
                 System.out.println("[x]" + storage.get(sys_number));
 
             }
+            else if (echo.startsWith("unmark ")) {
+                System.out.println(" OK, I've marked this task as not done yet: \n");
+                int user_number = Integer.parseInt(echo.substring(7));
+                int sys_number = user_number - 1;
+                completed.set(sys_number, false);
+                System.out.println("[ ]" + storage.get(sys_number));
+            }
             else {
                 System.out.println("added: "+echo);
                 storage.add(echo);
@@ -49,11 +56,5 @@ public class Anniechat {
 
 
 /*
- else if (echo.startsWith("unmark ")) {
-                System.out.println(" OK, I've marked this task as not done yet: \n");
-                int user_number = Integer.parseInt(echo.substring(7));
-                int sys_number = user_number - 1;
-                completed.set(sys_number, false);
-                System.out.println("[ ]" + storage.get(sys_number));
-            }
+
  */
