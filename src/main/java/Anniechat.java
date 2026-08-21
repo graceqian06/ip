@@ -39,20 +39,31 @@ public class Anniechat {
                 Task t = storage.get(sys_number);
                 t.markUndone();
             } else if (echo.startsWith("todo ")) {
+                if (echo.substring(5).isEmpty()){
+                    System.out.println("OOPS!!! The description of a todo cannot be empty.");
+                    continue;
+                };
                 Task t = new ToDo(echo);
                 storage.add(t);
             }
             else if (echo.startsWith("deadline ")) {
+                if (echo.substring(9).isEmpty()){
+                    System.out.println("OOPS!!! The description of a deadline cannot be empty.");
+                    continue;
+                };
                 Task t = new Deadline(echo);
                 storage.add(t);
             }
             else if (echo.startsWith("event ")) {
+                if (echo.substring(6).isEmpty()){
+                    System.out.println("OOPS!!! The description of an event cannot be empty.");
+                    continue;
+                };
                 Task t = new Event(echo);
                 storage.add(t);
             }
             else {
-                Task t = new ToDo(echo);
-                storage.add(t);
+                System.out.println("Sowwy idk what that means :(");
             }
         }
     }
