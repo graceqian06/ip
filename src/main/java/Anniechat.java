@@ -24,13 +24,15 @@ public class Anniechat {
                 System.out.println("a glimpse of ur tasks :)");
                 for (int i = 0; i < len; i ++){
                         Task t = storage.get(i);
-                        System.out.println(i+1 + "." + t.taskIcon() + t.statusIcon() + t.getTaskDesc());
+                        System.out.println(i+1 + "." + t.getTaskIcon() + t.statusIcon() + t.getTaskDesc());
                 }
             } else if (echo.startsWith("mark ")) {
                 int user_number = Integer.parseInt(echo.substring(5));
                 int sys_number = user_number -1;
                 Task t = storage.get(sys_number);
                 t.markDone();
+                System.out.println(" Nice! I've marked this task as done: \n");
+                System.out.println( t.statusIcon() + t.getTaskDesc());
 
             }
             else if (echo.startsWith("unmark ")) {
@@ -38,28 +40,33 @@ public class Anniechat {
                 int sys_number = user_number - 1;
                 Task t = storage.get(sys_number);
                 t.markUndone();
+                System.out.println(" OK, I've marked this task as not done yet: \n");
+                System.out.println( t.statusIcon() + t.getTaskDesc());
             } else if (echo.startsWith("todo ")) {
                 if (echo.substring(5).isEmpty()){
-                    System.out.println("OOPS!!! The description of a todo cannot be empty.");
+                    emptyDesc();
                     continue;
                 };
                 Task t = new ToDo(echo);
+                printAddedTask(t, t.getTaskCount());
                 storage.add(t);
             }
             else if (echo.startsWith("deadline ")) {
                 if (echo.substring(9).isEmpty()){
-                    System.out.println("OOPS!!! The description of a deadline cannot be empty.");
+                    emptyDesc();
                     continue;
                 };
                 Task t = new Deadline(echo);
+                printAddedTask(t, t.getTaskCount());
                 storage.add(t);
             }
             else if (echo.startsWith("event ")) {
                 if (echo.substring(6).isEmpty()){
-                    System.out.println("OOPS!!! The description of an event cannot be empty.");
+                    emptyDesc();
                     continue;
                 };
                 Task t = new Event(echo);
+                printAddedTask(t, t.getTaskCount());
                 storage.add(t);
             } else if (echo.startsWith("delete ")) {
                 int user_number = Integer.parseInt(echo.substring(7));
@@ -68,14 +75,25 @@ public class Anniechat {
                 storage.remove(t);
                 Task.removeTask();
                 System.out.println("Noted. I've removed this task:");
-                System.out.println(t.taskIcon() + t.statusIcon() + t.getTaskDesc());
+                System.out.println(t.getTaskIcon() + t.statusIcon() + t.getTaskDesc());
                 System.out.println("Now you have " + Task.taskCount() + " tasks in the list.");
             } else {
                 System.out.println("Sowwy idk what that means :(");
             }
         }
     }
+    public static void printAddedTask(Task t, int taskCount) {
+        System.out.println("Got it. I've added this task:");
+        System.out.println("  " + t.getTaskIcon() + t.statusIcon() + " " + t.getTaskDesc());
+        System.out.println("Now you have " + taskCount + " tasks in the list.");
+    }
+    public static void emptyDesc(){
+        System.out.println("OOPS!!! The description of an event cannot be empty.");
+    }
 }
+
+
+
 
 
 /*

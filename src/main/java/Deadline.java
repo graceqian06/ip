@@ -1,21 +1,19 @@
 public class Deadline extends Task{
-    String descndeadline = desc.substring(9);
-    String Desc = descndeadline.split("/")[0];
-    String deadline = descndeadline.split("/")[1];
-    String date = deadline.split(" ")[1];
-    String taskDesc =  Desc + "(by: " + date + ")";
+    String taskDesc;
     public Deadline(String desc) {
         super(desc);
-
-        System.out.println(" [D] [ ] " + taskDesc + "\n Now you have " + this.getTaskCount() + " tasks in the list.");
+        String descDeadline = desc.substring(9);
+        String Desc = descDeadline.split("/")[0];
+        String deadline = descDeadline.split("/")[1];
+        String date = deadline.split(" ")[1];
+        taskDesc =  Desc + "(by: " + date + ")";
     }
-
     @Override
     public String getTaskDesc() {
         return taskDesc;
     }
     @Override
-    public String taskIcon() {
+    public String getTaskIcon() {
         return "[D]";
     }
 }

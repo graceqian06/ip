@@ -3,15 +3,16 @@ public class ToDo extends Task {
 
     public ToDo(String desc) {
         super(desc);
-        System.out.println(" [T] [ ] " + taskDesc + "\n Now you have " + this.getTaskCount() + " tasks in the list.");
     }
 
     @Override
     public String getTaskDesc() {
         return taskDesc;
     }
+
     @Override
-    public String taskIcon() {
+    public String getTaskIcon(){
         return "[T]";
     }
+
 }
