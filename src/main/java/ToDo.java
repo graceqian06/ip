@@ -1,17 +1,23 @@
 public class ToDo extends Task {
-    String taskDesc = desc.substring(5);
+    String taskDesc;
 
     public ToDo(String desc) {
         super(desc);
-        System.out.println(" [T] [ ] " + taskDesc + "\n Now you have " + this.getTaskCount() + " tasks in the list.");
+        taskDesc = desc.substring(5);
+
     }
 
     @Override
     public String getTaskDesc() {
         return taskDesc;
     }
+
     @Override
-    public String taskIcon() {
-        return "[T]";
+    public String getTaskIcon(){
+        return "T";
+    }
+    @Override
+    public String toSaveFormat(){
+        return this.getTaskIcon() + " | " + (isDone? "1" : "0") + " | " + this.taskDesc;
     }
 }

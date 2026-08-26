@@ -1,14 +1,18 @@
 public class Event extends Task {
-        String long_desc = desc.substring(6);
-        String task_only = long_desc.split("/from")[0];
-        String day = desc.split("/from")[1];
-        String start = day.split("/to")[0];
-        String end = day.split("/to")[1];
-        String taskDesc =  task_only + "(from: " + start
-                + "to: " + end +")";
+    //example: event project meeting /from Mon 2pm /to 4pm
+    String taskDesc;
+    String taskOnly;
+    String start;
+    String end;
         public Event(String desc) {
             super(desc);
-            System.out.println(" [E] [ ] " + taskDesc + "\n Now you have " + this.getTaskCount() + " tasks in the list.");
+            String longDesc = desc.substring(6);
+            taskOnly = longDesc.split("/from")[0];
+            String day = desc.split("/from")[1];
+            start = day.split("/to")[0];
+            end = day.split("/to")[1];
+            taskDesc =  taskOnly + "(from: " + start
+                    + "to: " + end +")";
         }
 
         @Override
@@ -16,8 +20,12 @@ public class Event extends Task {
             return taskDesc;
         }
         @Override
-        public String taskIcon() {
-            return "[E]";
+        public String getTaskIcon() {
+            return "E";
+        }
+        @Override
+        public String toSaveFormat(){
+            return this.getTaskIcon() + " | " + (isDone ? "1" : "0") + " | " + this.taskOnly
+                    + " | " + start + " | " + end;
         }
     }
-
