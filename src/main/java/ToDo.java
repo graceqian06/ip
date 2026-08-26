@@ -1,8 +1,10 @@
 public class ToDo extends Task {
-    String taskDesc = desc.substring(5);
+    String taskDesc;
 
     public ToDo(String desc) {
         super(desc);
+        taskDesc = desc.substring(5);
+
     }
 
     @Override
@@ -12,7 +14,10 @@ public class ToDo extends Task {
 
     @Override
     public String getTaskIcon(){
-        return "[T]";
+        return "T";
     }
-
+    @Override
+    public String toSaveFormat(){
+        return this.getTaskIcon() + " | " + (isDone? "1" : "0") + " | " + this.taskDesc;
+    }
 }

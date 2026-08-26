@@ -40,4 +40,5 @@ public abstract class Task {
     }
     public abstract String getTaskIcon();
 
+    public abstract String toSaveFormat();
 }

@@ -1,12 +1,16 @@
 public class Event extends Task {
+    //example: event project meeting /from Mon 2pm /to 4pm
     String taskDesc;
+    String taskOnly;
+    String start;
+    String end;
         public Event(String desc) {
             super(desc);
             String longDesc = desc.substring(6);
-            String taskOnly = longDesc.split("/from")[0];
+            taskOnly = longDesc.split("/from")[0];
             String day = desc.split("/from")[1];
-            String start = day.split("/to")[0];
-            String end = day.split("/to")[1];
+            start = day.split("/to")[0];
+            end = day.split("/to")[1];
             taskDesc =  taskOnly + "(from: " + start
                     + "to: " + end +")";
         }
@@ -17,7 +21,11 @@ public class Event extends Task {
         }
         @Override
         public String getTaskIcon() {
-            return "[E]";
+            return "E";
+        }
+        @Override
+        public String toSaveFormat(){
+            return this.getTaskIcon() + " | " + (isDone ? "1" : "0") + " | " + this.taskOnly
+                    + " | " + start + " | " + end;
         }
     }
-

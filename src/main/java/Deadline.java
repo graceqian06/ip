@@ -1,11 +1,14 @@
 public class Deadline extends Task{
+    //example: deadline return book /by Sunday
     String taskDesc;
+    String date;
+    String Desc;
     public Deadline(String desc) {
         super(desc);
         String descDeadline = desc.substring(9);
-        String Desc = descDeadline.split("/")[0];
+        Desc = descDeadline.split("/")[0];
         String deadline = descDeadline.split("/")[1];
-        String date = deadline.split(" ")[1];
+        date = deadline.split(" ")[1];
         taskDesc =  Desc + "(by: " + date + ")";
     }
     @Override
@@ -14,6 +17,11 @@ public class Deadline extends Task{
     }
     @Override
     public String getTaskIcon() {
-        return "[D]";
+        return "D";
+    }
+
+    @Override
+    public String toSaveFormat(){
+        return this.getTaskIcon() + " | " + (isDone? "1" : "0") + " | " + this.Desc + " | " + this.date;
     }
 }
