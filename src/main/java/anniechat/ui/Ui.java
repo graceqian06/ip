@@ -76,4 +76,15 @@ public class Ui {
     public void showUnknownCommand() {
         System.out.println("Sowwy idk what that means :(");
     }
+
+    /** Displays the list of tasks containing the keyword */
+    public void showMatchingTasks(List<Task> tasks) {
+        int len = tasks.size();
+        System.out.println("Here are the matching tasks in your list:");
+        for (int i = 0; i < len; i++) {
+            Task t = tasks.get(i);
+            System.out.println(i + 1 + "." + "[" + t.getTaskIcon() + "]"
+                    + t.statusIcon() + t.getTaskDesc());
+        }
+    }
 }

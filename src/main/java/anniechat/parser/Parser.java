@@ -5,6 +5,9 @@ import anniechat.task.Event;
 import anniechat.task.Task;
 import anniechat.task.ToDo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Interprets commands entered by the user. */
 public class Parser {
     private final String input;
@@ -67,5 +70,20 @@ public class Parser {
         case "event" -> new Event(input);
         default -> throw new IllegalArgumentException("Unknown task command");
         };
+    }
+    /**
+     * Find all the tasks that include the keyword
+     *
+     * @return the list of tasks.
+     */
+    public List<Task> findMatchingTasks(List<Task> tasks) {
+        String keyword = input.split(" ",2)[1];
+        List<Task> result = new ArrayList<>();
+        for (Task t : tasks) {
+            if (t.getTaskDesc().contains(keyword)) {
+                result.add(t);
+            }
+        }
+        return result;
     }
 }

@@ -12,20 +12,18 @@ public class Anniechat {
     public static void main(String[] args) throws IOException {
         Ui ui = new Ui();
         ui.showWelcome();
-        Parser parser;
         Storage storage = new Storage("data/anniechat.txt");
         List<Task> tasks = storage.load();
         while (true) {
             String echo = ui.readCommand();
-            parser = new Parser(echo);
+            Parser parser = new Parser(echo);
 
             String commandWord = parser.getCommandWord();
 
             if (commandWord.equals("bye")) {
                 ui.showExit();
                 break;
-            }
-            else if (commandWord.equals("list")) {
+            } else if (commandWord.equals("list")) {
                 ui.showTaskList(tasks);
             } else if (commandWord.equals("mark")) {
                 int taskNumber = parser.getTaskNumber();
@@ -34,8 +32,7 @@ public class Anniechat {
                 storage.save(tasks);
                 ui.showMarkedTask(t);
 
-            }
-            else if (commandWord.equals("unmark")) {
+            } else if (commandWord.equals("unmark")) {
                 int taskNumber = parser.getTaskNumber();
                 Task t = tasks.get(taskNumber);
                 t.markUndone();
@@ -79,6 +76,9 @@ public class Anniechat {
                 Task.removeTask();
                 storage.save(tasks);
                 ui.showDeletedTask(t, Task.taskCount());
+            } else if (commandWord.equals("find")) {
+                List<Task> result = parser.findMatchingTasks(tasks);
+                ui.showMatchingTasks(result);
             } else {
                 ui.showUnknownCommand();
             }
