@@ -13,11 +13,12 @@ public class Deadline extends Task {
     public Deadline(String desc) {
         super(desc);
         String descDeadline = desc.split(" ", 2)[1];
-        String[] parts  = descDeadline.split("/by ",2);
-        taskOnly = parts[0];
-        deadline = LocalDate.parse(parts[1]);
+        String[] parts = descDeadline.split("/by ", 2);
+        taskOnly = parts[0].trim();
+        deadline = LocalDate.parse(parts[1].trim());
         taskDesc = taskOnly + " (by: "
-                + deadline.format(OUTPUT_FORMAT) + ")";    }
+                + deadline.format(OUTPUT_FORMAT) + ")";
+    }
     @Override
     public String getTaskDesc() {
         return taskDesc;
