@@ -5,8 +5,8 @@ import java.util.Locale;
 public class Deadline extends Task{
     //example: deadline return book /by Sunday
     private final LocalDate deadline;
-    private String taskOnly;
-    private String taskDesc;
+    private final String taskOnly;
+    private final String taskDesc;
 
     public Deadline(String desc) {
         super(desc);
