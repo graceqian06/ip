@@ -1,3 +1,5 @@
+package anniechat.task;
+
 public class Event extends Task {
     //example: event project meeting /from Mon 2pm /to 4pm
     String taskDesc;

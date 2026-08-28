@@ -1,3 +1,7 @@
+package anniechat.ui;
+
+import anniechat.task.Task;
+
 import java.util.List;
 import java.util.Scanner;
 

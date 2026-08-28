@@ -1,8 +1,10 @@
+package anniechat.task;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-public class Deadline extends Task{
+public class Deadline extends Task {
     //example: deadline return book /by Sunday
     private final LocalDate deadline;
     private final String taskOnly;

@@ -1,3 +1,10 @@
+package anniechat;
+
+import anniechat.parser.Parser;
+import anniechat.storage.Storage;
+import anniechat.task.Task;
+import anniechat.ui.Ui;
+
 import java.io.IOException;
 import java.util.List;
 
