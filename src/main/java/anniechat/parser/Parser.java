@@ -9,7 +9,11 @@ import anniechat.task.ToDo;
 public class Parser {
     private final String input;
 
-    /** Creates a parser for the given user input. */
+    /**
+     * Creates a parser for the given user input.
+     *
+     * @param input command entered by the user.
+     */
     public Parser(String input) {
         this.input = input;
     }

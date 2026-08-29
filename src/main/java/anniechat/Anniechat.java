@@ -1,31 +1,38 @@
-package anniechat;
+import java.io.IOException;
+import java.util.List;
 
 import anniechat.parser.Parser;
 import anniechat.storage.Storage;
 import anniechat.task.Task;
 import anniechat.ui.Ui;
 
-import java.io.IOException;
-import java.util.List;
-
+/** Runs the Anniechat command-line task manager. */
 public class Anniechat {
+    private Anniechat() {
+        // Prevent instantiation of the entry-point class.
+    }
+
+    /**
+     * Starts Anniechat and processes commands until the user exits.
+     *
+     * @param args command-line arguments, which are not used.
+     * @throws IOException if the task data file cannot be read or written.
+     */
     public static void main(String[] args) throws IOException {
         Ui ui = new Ui();
         ui.showWelcome();
-        Parser parser;
         Storage storage = new Storage("data/anniechat.txt");
         List<Task> tasks = storage.load();
         while (true) {
             String echo = ui.readCommand();
-            parser = new Parser(echo);
+            Parser parser = new Parser(echo);
 
             String commandWord = parser.getCommandWord();
 
             if (commandWord.equals("bye")) {
                 ui.showExit();
                 break;
-            }
-            else if (commandWord.equals("list")) {
+            } else if (commandWord.equals("list")) {
                 ui.showTaskList(tasks);
             } else if (commandWord.equals("mark")) {
                 int taskNumber = parser.getTaskNumber();
@@ -34,24 +41,22 @@ public class Anniechat {
                 storage.save(tasks);
                 ui.showMarkedTask(t);
 
-            }
-            else if (commandWord.equals("unmark")) {
+            } else if (commandWord.equals("unmark")) {
                 int taskNumber = parser.getTaskNumber();
                 Task t = tasks.get(taskNumber);
                 t.markUndone();
                 storage.save(tasks);
                 ui.showUnmarkedTask(t);
             } else if (commandWord.equals("todo")) {
-                if (parser.getTaskDescription().isEmpty()){
+                if (parser.getTaskDescription().isEmpty()) {
                     ui.showEmptyDescription();
                     continue;
-                };
+                }
                 Task t = parser.createTask();
                 ui.showAddedTask(t, t.getTaskCount());
                 tasks.add(t);
                 storage.save(tasks);
-            }
-            else if (commandWord.equals("deadline")) {
+            } else if (commandWord.equals("deadline")) {
                 if (parser.getTaskDescription().isEmpty()) {
                     ui.showEmptyDescription();
                     continue;
@@ -61,12 +66,11 @@ public class Anniechat {
                 tasks.add(t);
                 storage.save(tasks);
 
-            }
-            else if (commandWord.equals("event")) {
-                if (parser.getTaskDescription().isEmpty()){
+            } else if (commandWord.equals("event")) {
+                if (parser.getTaskDescription().isEmpty()) {
                     ui.showEmptyDescription();
                     continue;
-                };
+                }
                 Task t = parser.createTask();
                 ui.showAddedTask(t, t.getTaskCount());
                 tasks.add(t);

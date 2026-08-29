@@ -1,8 +1,8 @@
 package anniechat.task;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 /** Tests the behaviour of {@link ToDo}. */
 public class ToDoTest {

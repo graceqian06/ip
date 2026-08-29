@@ -1,10 +1,11 @@
 package anniechat.ui;
 
-import anniechat.task.Task;
-
 import java.util.List;
 import java.util.Scanner;
 
+import anniechat.task.Task;
+
+/** Handles input from and output to the user. */
 public class Ui {
     private final Scanner scanner;
 
@@ -18,7 +19,11 @@ public class Ui {
         System.out.println("Hello! I'm Anniechat.\nWhat can I do for you?\n");
     }
 
-    /** Reads one command from the user. */
+    /**
+     * Reads one command from the user.
+     *
+     * @return command entered by the user.
+     */
     public String readCommand() {
         return this.scanner.nextLine();
     }
@@ -28,7 +33,11 @@ public class Ui {
         System.out.println("Byeee! Cya again soon!");
     }
 
-    /** Displays all tasks in the task list. */
+    /**
+     * Displays all tasks in the task list.
+     *
+     * @param tasks tasks to display.
+     */
     public void showTaskList(List<Task> tasks) {
         int len = tasks.size();
         System.out.println("a glimpse of ur tasks :)");
@@ -39,19 +48,32 @@ public class Ui {
         }
     }
 
-    /** Displays a task that was marked as done. */
+    /**
+     * Displays a task that was marked as done.
+     *
+     * @param task task that was marked as done.
+     */
     public void showMarkedTask(Task task) {
         System.out.println("Nice! I've marked this task as done:\n");
         System.out.println(task.statusIcon() + task.getTaskDesc());
     }
 
-    /** Displays a task that was marked as not done. */
+    /**
+     * Displays a task that was marked as not done.
+     *
+     * @param task task that was marked as not done.
+     */
     public void showUnmarkedTask(Task task) {
         System.out.println("OK, I've marked this task as not done yet:\n");
         System.out.println(task.statusIcon() + task.getTaskDesc());
     }
 
-    /** Displays a newly added task and the number of tasks in the list. */
+    /**
+     * Displays a newly added task and the number of tasks in the list.
+     *
+     * @param task newly added task.
+     * @param taskCount current number of tasks in the list.
+     */
     public void showAddedTask(Task task, int taskCount) {
         System.out.println("Got it. I've added this task:");
         System.out.println("  " + "[" + task.getTaskIcon() + "]"
@@ -59,7 +81,12 @@ public class Ui {
         System.out.println("Now you have " + taskCount + " tasks in the list.");
     }
 
-    /** Displays a task that was deleted and the remaining task count. */
+    /**
+     * Displays a task that was deleted and the remaining task count.
+     *
+     * @param task deleted task.
+     * @param taskCount remaining number of tasks in the list.
+     */
     public void showDeletedTask(Task task, int taskCount) {
         System.out.println("Noted. I've removed this task:");
         System.out.println("[" + task.getTaskIcon() + "]"

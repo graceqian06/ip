@@ -4,12 +4,18 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+/** Represents a task that must be completed by a specific date. */
 public class Deadline extends Task {
-    //example: deadline return book /by Sunday
+    // Example: deadline return book /by 2019-10-15
     private final LocalDate deadline;
     private final String taskOnly;
     private final String taskDesc;
 
+    /**
+     * Creates a deadline task from a command containing an ISO date.
+     *
+     * @param desc command containing the task description and ISO date.
+     */
     public Deadline(String desc) {
         super(desc);
         String descDeadline = desc.split(" ", 2)[1];
@@ -19,6 +25,7 @@ public class Deadline extends Task {
         taskDesc = taskOnly + " (by: "
                 + deadline.format(OUTPUT_FORMAT) + ")";
     }
+
     @Override
     public String getTaskDesc() {
         return taskDesc;
@@ -29,10 +36,10 @@ public class Deadline extends Task {
     }
 
     @Override
-    public String toSaveFormat(){
-        return this.getTaskIcon() + " | " + (isDone? "1" : "0") + " | " + this.taskOnly + " | " + this.deadline;
+    public String toSaveFormat() {
+        return this.getTaskIcon() + " | " + (isDone ? "1" : "0") + " | " + this.taskOnly + " | " + this.deadline;
     }
+
     private static final DateTimeFormatter OUTPUT_FORMAT =
             DateTimeFormatter.ofPattern("MMM d yyyy", Locale.ENGLISH);
-
 }
