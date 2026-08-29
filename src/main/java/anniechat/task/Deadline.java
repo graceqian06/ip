@@ -37,7 +37,8 @@ public class Deadline extends Task {
 
     @Override
     public String toSaveFormat() {
-        return this.getTaskIcon() + " | " + (isDone ? "1" : "0") + " | " + this.taskOnly + " | " + this.deadline;
+        return this.getTaskIcon() + " | " + (isDone ? "1" : "0")
+                + " | " + this.taskOnly + " | " + this.deadline;
     }
 
     private static final DateTimeFormatter OUTPUT_FORMAT =
