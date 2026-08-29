@@ -83,6 +83,9 @@ public class Anniechat {
                 Task.removeTask();
                 storage.save(tasks);
                 ui.showDeletedTask(t, Task.taskCount());
+            } else if (commandWord.equals("find")) {
+                List<Task> result = parser.findMatchingTasks(tasks);
+                ui.showMatchingTasks(result);
             } else {
                 ui.showUnknownCommand();
             }
