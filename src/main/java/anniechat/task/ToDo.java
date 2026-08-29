@@ -15,11 +15,12 @@ public class ToDo extends Task {
     }
 
     @Override
-    public String getTaskIcon(){
+    public String getTaskIcon() {
         return "T";
     }
+
     @Override
-    public String toSaveFormat(){
-        return this.getTaskIcon() + " | " + (isDone? "1" : "0") + " | " + this.taskDesc;
+    public String toSaveFormat() {
+        return this.getTaskIcon() + " | " + (isDone ? "1" : "0") + " | " + this.taskDesc;
     }
 }

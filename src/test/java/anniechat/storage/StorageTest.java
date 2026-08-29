@@ -1,16 +1,16 @@
 package anniechat.storage;
 
-import anniechat.task.Task;
-import anniechat.task.ToDo;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import anniechat.task.Task;
+import anniechat.task.ToDo;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /** Tests saving tasks to the file system through {@link Storage}. */
 public class StorageTest {

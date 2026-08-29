@@ -1,8 +1,8 @@
 package anniechat.parser;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 /** Tests the command interpretation performed by {@link Parser}. */
 public class ParserTest {
