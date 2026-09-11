@@ -80,6 +80,7 @@ public class Storage {
         if (parts.length < 3) {
             throw new IllegalArgumentException("Invalid task data: " + line);
         }
+        assert parts.length >=3 : "Task data should not be allowed";
 
         Task task = switch (parts[0]) {
         case "T" -> new ToDo("todo " + parts[2]);

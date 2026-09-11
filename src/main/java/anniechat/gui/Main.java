@@ -86,7 +86,6 @@ public class Main extends Application {
     /** Executes one command and displays the corresponding response. */
     private void executeCommand(String input) {
         Parser parser = new Parser(input);
-
         try {
             switch (parser.getCommandWord()) {
             case "bye":

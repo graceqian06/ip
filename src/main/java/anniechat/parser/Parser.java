@@ -44,6 +44,7 @@ public class Parser {
     public int getTaskNumber() {
         String[] parts = input.trim().split("\\s+");
         int userNumber = Integer.parseInt(parts[1]);
+        assert userNumber > 0: "Task number should be a positive integer!";
         return userNumber - 1;
     }
 
