@@ -29,7 +29,7 @@ public class Main extends Application {
     private final Storage storage = new Storage(DATA_FILE_PATH);
     private final List<Task> tasks = new ArrayList<>();
     private final VBox conversation = new VBox(6);
-    private final ScrollPane chatScrollPane = new ScrollPane(chatScrollPane);
+    private final ScrollPane chatScrollPane = new ScrollPane(conversation);
     private final TextField commandInput = new TextField();
     private final Button sendButton = new Button("Send");
 
@@ -57,7 +57,7 @@ public class Main extends Application {
         Label title = new Label("Anniechat");
         BorderPane root = new BorderPane();
         root.setTop(title);
-        root.setCenter(conversation);
+        root.setCenter(chatScrollPane);
         root.setBottom(commandBar);
         BorderPane.setMargin(title, new Insets(10, 10, 0, 10));
 
