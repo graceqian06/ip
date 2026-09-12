@@ -1,12 +1,8 @@
 package anniechat.gui;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import anniechat.parser.Parser;
+import anniechat.logic.CommandHandler;
+import anniechat.logic.CommandResult;
 import anniechat.storage.Storage;
-import anniechat.task.Task;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,15 +19,13 @@ import javafx.stage.Stage;
 
 /** Provides a graphical interface for the Anniechat task manager. */
 public class Main extends Application {
-
     private static final String DATA_FILE_PATH = "data/anniechat.txt";
 
-    private final Storage storage = new Storage(DATA_FILE_PATH);
-    private final List<Task> tasks = new ArrayList<>();
     private final VBox conversation = new VBox(6);
     private final ScrollPane chatScrollPane = new ScrollPane(conversation);
     private final TextField commandInput = new TextField();
     private final Button sendButton = new Button("Send");
+    private CommandHandler commandHandler;
 
     /**
      * Creates the chatbot window and connects its controls to the chatbot logic.
@@ -40,16 +34,36 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage stage) {
+        commandHandler = new CommandHandler(new Storage(DATA_FILE_PATH));
+        configureConversation();
+        configureCommandInput();
+
+        BorderPane root = createLayout();
+        stage.setTitle("Anniechat");
+        stage.setScene(new Scene(root, 640, 480));
+
+        showStartupMessages();
+        stage.show();
+    }
+
+    /** Configures the scrollable area containing chat bubbles. */
+    private void configureConversation() {
         conversation.setPadding(new Insets(10));
         conversation.setFillWidth(true);
         chatScrollPane.setFitToWidth(true);
         chatScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         chatScrollPane.setStyle("-fx-background: white; -fx-border-color: transparent;");
+    }
 
+    /** Configures the text field and button used to send commands. */
+    private void configureCommandInput() {
         commandInput.setPromptText("Type a command, e.g. todo read book");
         commandInput.setOnAction(event -> sendCommand());
         sendButton.setOnAction(event -> sendCommand());
+    }
 
+    /** Creates the main layout of the chatbot window. */
+    private BorderPane createLayout() {
         HBox commandBar = new HBox(10, commandInput, sendButton);
         commandBar.setPadding(new Insets(10));
         HBox.setHgrow(commandInput, Priority.ALWAYS);
@@ -60,15 +74,15 @@ public class Main extends Application {
         root.setCenter(chatScrollPane);
         root.setBottom(commandBar);
         BorderPane.setMargin(title, new Insets(10, 10, 0, 10));
+        return root;
+    }
 
-        Scene scene = new Scene(root, 640, 480);
-        stage.setTitle("Anniechat");
-        stage.setScene(scene);
-        stage.setOnCloseRequest(event -> saveTasks());
-
-        loadTasks();
+    /** Displays loading errors and the initial welcome message. */
+    private void showStartupMessages() {
+        if (!commandHandler.getStartupMessage().isEmpty()) {
+            appendBotMessage(commandHandler.getStartupMessage());
+        }
         appendBotMessage("Hello! I am Anniechat. What can I do for you?");
-        stage.show();
     }
 
     /** Sends the command currently typed in the input field. */
@@ -80,128 +94,13 @@ public class Main extends Application {
 
         appendUserMessage(input);
         commandInput.clear();
-        executeCommand(input);
-    }
 
-    /** Executes one command and displays the corresponding response. */
-    private void executeCommand(String input) {
-        Parser parser = new Parser(input);
-
-        try {
-            switch (parser.getCommandWord()) {
-            case "bye":
-                appendBotMessage("Bye. See you next time!");
-                commandInput.setDisable(true);
-                sendButton.setDisable(true);
-                break;
-            case "list":
-                showTaskList(tasks);
-                break;
-            case "mark":
-                markTask(parser.getTaskNumber(), true);
-                break;
-            case "unmark":
-                markTask(parser.getTaskNumber(), false);
-                break;
-            case "delete":
-                deleteTask(parser.getTaskNumber());
-                break;
-            case "todo":
-            case "deadline":
-            case "event":
-                addTask(parser);
-                break;
-            case "find":
-                showTaskList(parser.findMatchingTasks(tasks));
-                break;
-            default:
-                appendBotMessage("I do not recognise that command. Try list, todo, deadline, event, "
-                        + "mark, unmark, delete, find, or bye.");
-                break;
-            }
-        } catch (IllegalArgumentException | IndexOutOfBoundsException exception) {
-            appendBotMessage("Sorry, I could not understand that command.");
+        CommandResult result = commandHandler.handle(input);
+        appendBotMessage(result.getMessage());
+        if (result.isExitRequested()) {
+            commandInput.setDisable(true);
+            sendButton.setDisable(true);
         }
-    }
-
-    /** Loads saved tasks when the GUI starts. */
-    private void loadTasks() {
-        try {
-            tasks.addAll(storage.load());
-        } catch (IOException | IllegalArgumentException exception) {
-            appendBotMessage("I could not load your saved tasks, so I started with an empty list.");
-        }
-    }
-
-    /** Adds a newly parsed task and saves the updated task list. */
-    private void addTask(Parser parser) {
-        Task task = parser.createTask();
-        tasks.add(task);
-        saveTasks();
-        appendBotMessage("Got it. I have added this task:\n" + formatTask(task));
-    }
-
-    /** Marks or unmarks a task at the given zero-based index. */
-    private void markTask(int taskIndex, boolean done) {
-        Task task = getTask(taskIndex);
-        if (done) {
-            task.markDone();
-            appendBotMessage("Nice! I marked this task as done:\n" + formatTask(task));
-        } else {
-            task.markUndone();
-            appendBotMessage("Okay, I marked this task as not done:\n" + formatTask(task));
-        }
-        saveTasks();
-    }
-
-    /** Deletes a task at the given zero-based index and saves the updated list. */
-    private void deleteTask(int taskIndex) {
-        Task task = getTask(taskIndex);
-        tasks.remove(taskIndex);
-        Task.removeTask();
-        saveTasks();
-        appendBotMessage("I have deleted this task:\n" + formatTask(task));
-    }
-
-    /** Returns a task or throws an error when the requested index is invalid. */
-    private Task getTask(int taskIndex) {
-        if (taskIndex < 0 || taskIndex >= tasks.size()) {
-            throw new IndexOutOfBoundsException();
-        }
-        return tasks.get(taskIndex);
-    }
-
-    /** Displays all tasks in the supplied list. */
-    private void showTaskList(List<Task> tasksToShow) {
-        if (tasksToShow.isEmpty()) {
-            appendBotMessage("There are no matching tasks.");
-            return;
-        }
-
-        StringBuilder message = new StringBuilder("Here are the tasks:\n");
-        for (int i = 0; i < tasksToShow.size(); i++) {
-            message.append(formatNumberedTask(tasksToShow.get(i), i + 1)).append("\n");
-        }
-        appendBotMessage(message.toString().trim());
-    }
-
-    /** Saves the current task list to the configured data file. */
-    private void saveTasks() {
-        try {
-            storage.save(tasks);
-        } catch (IOException exception) {
-            appendBotMessage("I could not save your latest changes.");
-        }
-    }
-
-    /** Formats a task for a chatbot response. */
-    private String formatTask(Task task) {
-        return task.statusIcon() + " " + task.getTaskIcon() + " " + task.getTaskDesc();
-    }
-
-    /** Formats a task with its number for the task-list response. */
-    private String formatNumberedTask(Task task, int number) {
-        return number + ". " + formatTask(task);
     }
 
     /** Adds a user message to the conversation display. */
