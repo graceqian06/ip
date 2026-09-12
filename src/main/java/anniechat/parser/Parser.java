@@ -85,7 +85,9 @@ public class Parser {
         String keyword = input.split(" ",2)[1];
         List<Task> result = new ArrayList<>();
         for (Task t : tasks) {
-            if (t.getTaskDesc().contains(keyword)) {
+            if (keyword.startsWith("#")
+                    ? t.hasTag(keyword)
+                    : t.getTaskDesc().contains(keyword)) {
                 result.add(t);
             }
         }

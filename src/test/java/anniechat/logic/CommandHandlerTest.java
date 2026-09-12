@@ -52,4 +52,27 @@ public class CommandHandlerTest {
         assertEquals("Byeee! Cya again soon!", result.getMessage());
         assertTrue(result.isExitRequested());
     }
+
+    @Test
+    public void handle_taggedTask_canBeFoundByTag() throws IOException {
+        Path filePath = temporaryDirectory.resolve("tasks.txt");
+        CommandHandler handler = new CommandHandler(new Storage(filePath.toString()));
+
+        handler.handle("todo read book #school");
+        CommandResult result = handler.handle("find #school");
+
+        assertTrue(result.getMessage().contains("read book #school"));
+    }
+
+    @Test
+    public void handle_taggedTask_preservesTagWhenReloaded() throws IOException {
+        Path filePath = temporaryDirectory.resolve("tasks.txt");
+        CommandHandler firstHandler = new CommandHandler(new Storage(filePath.toString()));
+        firstHandler.handle("todo submit report #school");
+
+        CommandHandler reloadedHandler = new CommandHandler(new Storage(filePath.toString()));
+        CommandResult result = reloadedHandler.handle("list");
+
+        assertTrue(result.getMessage().contains("submit report #school"));
+    }
 }
