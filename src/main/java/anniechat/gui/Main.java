@@ -1,12 +1,10 @@
 package anniechat.gui;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URL;
 
-import anniechat.parser.Parser;
+import anniechat.logic.CommandHandler;
+import anniechat.logic.CommandResult;
 import anniechat.storage.Storage;
-import anniechat.task.Task;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -15,23 +13,31 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
-/** Provides a graphical interface for the Anniechat task manager. */
+/** Provides a graphical interface for the WhiskerList task manager. */
 public class Main extends Application {
-
     private static final String DATA_FILE_PATH = "data/anniechat.txt";
+    private static final String BOT_NAME = "WhiskerList";
+    private static final String BOT_AVATAR_RESOURCE = "/images/whiskerlist.png";
+    private static final String BOT_BUBBLE_COLOR = "#FFE1EC";
+    private static final String USER_BUBBLE_COLOR = "#E7D8FF";
+    private static final String BOT_TEXT_COLOR = "#5B2945";
+    private static final String USER_TEXT_COLOR = "#3F2A5C";
 
-    private final Storage storage = new Storage(DATA_FILE_PATH);
-    private final List<Task> tasks = new ArrayList<>();
     private final VBox conversation = new VBox(6);
     private final ScrollPane chatScrollPane = new ScrollPane(conversation);
     private final TextField commandInput = new TextField();
     private final Button sendButton = new Button("Send");
+    private Image botAvatar;
+    private CommandHandler commandHandler;
 
     /**
      * Creates the chatbot window and connects its controls to the chatbot logic.
@@ -40,35 +46,78 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage stage) {
+        commandHandler = new CommandHandler(new Storage(DATA_FILE_PATH));
+        botAvatar = loadBotAvatar();
+        configureConversation();
+        configureCommandInput();
+
+        BorderPane root = createLayout();
+        stage.setTitle(BOT_NAME);
+        stage.setScene(new Scene(root, 640, 480));
+
+        showStartupMessages();
+        stage.show();
+    }
+
+    /** Configures the scrollable area containing chat bubbles. */
+    private void configureConversation() {
         conversation.setPadding(new Insets(10));
         conversation.setFillWidth(true);
         chatScrollPane.setFitToWidth(true);
         chatScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        chatScrollPane.setStyle("-fx-background: white; -fx-border-color: transparent;");
+        chatScrollPane.setStyle("-fx-background: #FFF9FC; -fx-border-color: transparent;");
+        conversation.setStyle("-fx-background-color: #FFF9FC;");
+    }
 
+    /** Configures the text field and button used to send commands. */
+    private void configureCommandInput() {
         commandInput.setPromptText("Type a command, e.g. todo read book");
+        commandInput.setStyle("-fx-background-radius: 18; -fx-border-radius: 18;"
+                + "-fx-border-color: #E7D8FF; -fx-padding: 8 12;");
         commandInput.setOnAction(event -> sendCommand());
+        sendButton.setStyle("-fx-background-color: #C9A7EB; -fx-text-fill: #2F1B43;"
+                + "-fx-background-radius: 18; -fx-padding: 8 16;");
         sendButton.setOnAction(event -> sendCommand());
+    }
 
+    /** Creates the main layout of the chatbot window. */
+    private BorderPane createLayout() {
         HBox commandBar = new HBox(10, commandInput, sendButton);
         commandBar.setPadding(new Insets(10));
         HBox.setHgrow(commandInput, Priority.ALWAYS);
 
-        Label title = new Label("Anniechat");
         BorderPane root = new BorderPane();
-        root.setTop(title);
+        root.setTop(createHeader());
         root.setCenter(chatScrollPane);
         root.setBottom(commandBar);
-        BorderPane.setMargin(title, new Insets(10, 10, 0, 10));
+        root.setStyle("-fx-background-color: #FFF9FC;");
+        return root;
+    }
 
-        Scene scene = new Scene(root, 640, 480);
-        stage.setTitle("Anniechat");
-        stage.setScene(scene);
-        stage.setOnCloseRequest(event -> saveTasks());
+    /** Creates the header containing the chatbot avatar and product name. */
+    private HBox createHeader() {
+        HBox header = new HBox(10);
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setPadding(new Insets(10));
+        header.setStyle("-fx-background-color: #FFD6E7;");
 
-        loadTasks();
-        appendBotMessage("Hello! I am Anniechat. What can I do for you?");
-        stage.show();
+        if (botAvatar != null) {
+            header.getChildren().add(createAvatarView(botAvatar, 42));
+        }
+
+        Label title = new Label(BOT_NAME);
+        title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;"
+                + "-fx-text-fill: #5B2945;");
+        header.getChildren().add(title);
+        return header;
+    }
+
+    /** Displays loading errors and the initial welcome message. */
+    private void showStartupMessages() {
+        if (!commandHandler.getStartupMessage().isEmpty()) {
+            appendBotMessage(commandHandler.getStartupMessage());
+        }
+        appendBotMessage(CommandHandler.WELCOME_MESSAGE);
     }
 
     /** Sends the command currently typed in the input field. */
@@ -80,145 +129,32 @@ public class Main extends Application {
 
         appendUserMessage(input);
         commandInput.clear();
-        executeCommand(input);
-    }
 
-    /** Executes one command and displays the corresponding response. */
-    private void executeCommand(String input) {
-        Parser parser = new Parser(input);
-
-        try {
-            switch (parser.getCommandWord()) {
-            case "bye":
-                appendBotMessage("Bye. See you next time!");
-                commandInput.setDisable(true);
-                sendButton.setDisable(true);
-                break;
-            case "list":
-                showTaskList(tasks);
-                break;
-            case "mark":
-                markTask(parser.getTaskNumber(), true);
-                break;
-            case "unmark":
-                markTask(parser.getTaskNumber(), false);
-                break;
-            case "delete":
-                deleteTask(parser.getTaskNumber());
-                break;
-            case "todo":
-            case "deadline":
-            case "event":
-                addTask(parser);
-                break;
-            case "find":
-                showTaskList(parser.findMatchingTasks(tasks));
-                break;
-            default:
-                appendBotMessage("I do not recognise that command. Try list, todo, deadline, event, "
-                        + "mark, unmark, delete, find, or bye.");
-                break;
-            }
-        } catch (IllegalArgumentException | IndexOutOfBoundsException exception) {
-            appendBotMessage("Sorry, I could not understand that command.");
+        CommandResult result = commandHandler.handle(input);
+        appendBotMessage(result.getMessage());
+        if (result.isExitRequested()) {
+            commandInput.setDisable(true);
+            sendButton.setDisable(true);
         }
-    }
-
-    /** Loads saved tasks when the GUI starts. */
-    private void loadTasks() {
-        try {
-            tasks.addAll(storage.load());
-        } catch (IOException | IllegalArgumentException exception) {
-            appendBotMessage("I could not load your saved tasks, so I started with an empty list.");
-        }
-    }
-
-    /** Adds a newly parsed task and saves the updated task list. */
-    private void addTask(Parser parser) {
-        Task task = parser.createTask();
-        tasks.add(task);
-        saveTasks();
-        appendBotMessage("Got it. I have added this task:\n" + formatTask(task));
-    }
-
-    /** Marks or unmarks a task at the given zero-based index. */
-    private void markTask(int taskIndex, boolean done) {
-        Task task = getTask(taskIndex);
-        if (done) {
-            task.markDone();
-            appendBotMessage("Nice! I marked this task as done:\n" + formatTask(task));
-        } else {
-            task.markUndone();
-            appendBotMessage("Okay, I marked this task as not done:\n" + formatTask(task));
-        }
-        saveTasks();
-    }
-
-    /** Deletes a task at the given zero-based index and saves the updated list. */
-    private void deleteTask(int taskIndex) {
-        Task task = getTask(taskIndex);
-        tasks.remove(taskIndex);
-        Task.removeTask();
-        saveTasks();
-        appendBotMessage("I have deleted this task:\n" + formatTask(task));
-    }
-
-    /** Returns a task or throws an error when the requested index is invalid. */
-    private Task getTask(int taskIndex) {
-        if (taskIndex < 0 || taskIndex >= tasks.size()) {
-            throw new IndexOutOfBoundsException();
-        }
-        return tasks.get(taskIndex);
-    }
-
-    /** Displays all tasks in the supplied list. */
-    private void showTaskList(List<Task> tasksToShow) {
-        if (tasksToShow.isEmpty()) {
-            appendBotMessage("There are no matching tasks.");
-            return;
-        }
-
-        StringBuilder message = new StringBuilder("Here are the tasks:\n");
-        for (int i = 0; i < tasksToShow.size(); i++) {
-            message.append(formatNumberedTask(tasksToShow.get(i), i + 1)).append("\n");
-        }
-        appendBotMessage(message.toString().trim());
-    }
-
-    /** Saves the current task list to the configured data file. */
-    private void saveTasks() {
-        try {
-            storage.save(tasks);
-        } catch (IOException exception) {
-            appendBotMessage("I could not save your latest changes.");
-        }
-    }
-
-    /** Formats a task for a chatbot response. */
-    private String formatTask(Task task) {
-        return task.statusIcon() + " " + task.getTaskIcon() + " " + task.getTaskDesc();
-    }
-
-    /** Formats a task with its number for the task-list response. */
-    private String formatNumberedTask(Task task, int number) {
-        return number + ". " + formatTask(task);
     }
 
     /** Adds a user message to the conversation display. */
     private void appendUserMessage(String message) {
-        appendMessage("You", message, Pos.CENTER_RIGHT, "#e7e7e7", "#202124");
+        appendMessage("You", message, Pos.CENTER_RIGHT, USER_BUBBLE_COLOR,
+                USER_TEXT_COLOR, null);
     }
 
-    /** Adds an Anniechat response to the conversation display. */
+    /** Adds a WhiskerList response to the conversation display. */
     private void appendBotMessage(String message) {
-        appendMessage("Anniechat", message, Pos.CENTER_LEFT, "#d9fdd3", "#1b5e20");
+        appendMessage(BOT_NAME, message, Pos.CENTER_LEFT, BOT_BUBBLE_COLOR,
+                BOT_TEXT_COLOR, botAvatar);
     }
 
     /** Adds a coloured, aligned chat bubble to the conversation display. */
     private void appendMessage(String sender, String message, Pos alignment,
-                               String backgroundColor, String textColor) {
+                               String backgroundColor, String textColor, Image avatar) {
         Label senderLabel = new Label(sender);
-        senderLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666666;");
+        senderLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #6E5A68;");
 
         Label bubble = new Label(message);
         bubble.setWrapText(true);
@@ -230,10 +166,30 @@ public class Main extends Application {
 
         VBox messageBlock = new VBox(2, senderLabel, bubble);
         messageBlock.setMaxWidth(460);
-        HBox messageRow = new HBox(messageBlock);
+        HBox messageRow = new HBox(8);
         messageRow.setAlignment(alignment);
         messageRow.setMaxWidth(Double.MAX_VALUE);
+        if (avatar != null) {
+            messageRow.getChildren().add(createAvatarView(avatar, 32));
+        }
+        messageRow.getChildren().add(messageBlock);
         conversation.getChildren().add(messageRow);
         chatScrollPane.setVvalue(1.0);
+    }
+
+    /** Loads the chatbot profile picture from the application resources. */
+    private Image loadBotAvatar() {
+        URL avatarUrl = Main.class.getResource(BOT_AVATAR_RESOURCE);
+        return avatarUrl == null ? null : new Image(avatarUrl.toExternalForm());
+    }
+
+    /** Creates a circular avatar view for a chat message or the header. */
+    private ImageView createAvatarView(Image avatar, double size) {
+        ImageView avatarView = new ImageView(avatar);
+        avatarView.setFitWidth(size);
+        avatarView.setFitHeight(size);
+        avatarView.setPreserveRatio(true);
+        avatarView.setClip(new Circle(size / 2, size / 2, size / 2));
+        return avatarView;
     }
 }

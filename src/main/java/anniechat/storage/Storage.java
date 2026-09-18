@@ -77,15 +77,10 @@ public class Storage {
     private Task createTask(String line) {
         String[] parts = line.split("\\s*\\|\\s*", -1);
 
-        if (parts.length < 3) {
-            throw new IllegalArgumentException("Invalid task data: " + line);
-        }
-
         Task task = switch (parts[0]) {
-        case "T" -> new ToDo("todo " + parts[2]);
-        case "D" -> new Deadline("deadline " + parts[2] + " /by " + parts[3]);
-        case "E" -> new Event("event " + parts[2] + " /from " + parts[3]
-                + "/to " + parts[4]);
+        case "T" -> createToDo(parts, line);
+        case "D" -> createDeadline(parts, line);
+        case "E" -> createEvent(parts, line);
         default -> throw new IllegalArgumentException("Unknown task type: " + parts[0]);
         };
 
@@ -96,5 +91,31 @@ public class Storage {
         }
 
         return task;
+    }
+
+    /** Creates a to-do task after validating its saved representation. */
+    private Task createToDo(String[] parts, String line) {
+        validatePartCount(parts, 3, line);
+        return new ToDo("todo " + parts[2]);
+    }
+
+    /** Creates a deadline task after validating its saved representation. */
+    private Task createDeadline(String[] parts, String line) {
+        validatePartCount(parts, 4, line);
+        return new Deadline("deadline " + parts[2] + " /by " + parts[3]);
+    }
+
+    /** Creates an event task after validating its saved representation. */
+    private Task createEvent(String[] parts, String line) {
+        validatePartCount(parts, 5, line);
+        return new Event("event " + parts[2] + " /from " + parts[3]
+                + "/to " + parts[4]);
+    }
+
+    /** Ensures a saved task line has exactly the expected number of fields. */
+    private void validatePartCount(String[] parts, int expectedCount, String line) {
+        if (parts.length != expectedCount) {
+            throw new IllegalArgumentException("Invalid task data: " + line);
+        }
     }
 }

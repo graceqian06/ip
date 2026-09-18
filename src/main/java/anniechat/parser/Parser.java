@@ -43,7 +43,21 @@ public class Parser {
      */
     public int getTaskNumber() {
         String[] parts = input.trim().split("\\s+");
-        int userNumber = Integer.parseInt(parts[1]);
+        if (parts.length < 2) {
+            throw new IllegalArgumentException("Task number is missing");
+        }
+
+        int userNumber;
+        try {
+            userNumber = Integer.parseInt(parts[1]);
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException("Task number must be an integer", exception);
+        }
+
+        if (userNumber <= 0) {
+            throw new IllegalArgumentException("Task number must be positive");
+        }
+
         return userNumber - 1;
     }
 
@@ -81,10 +95,17 @@ public class Parser {
      * @return the list of tasks.
      */
     public List<Task> findMatchingTasks(List<Task> tasks) {
-        String keyword = input.split(" ",2)[1];
+        String[] parts = input.trim().split("\\s+", 2);
+        if (parts.length < 2 || parts[1].isBlank()) {
+            throw new IllegalArgumentException("Find keyword is missing");
+        }
+
+        String keyword = parts[1];
         List<Task> result = new ArrayList<>();
         for (Task t : tasks) {
-            if (t.getTaskDesc().contains(keyword)) {
+            if (keyword.startsWith("#")
+                    ? t.hasTag(keyword)
+                    : t.getTaskDesc().contains(keyword)) {
                 result.add(t);
             }
         }

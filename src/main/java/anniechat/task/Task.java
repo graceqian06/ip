@@ -1,12 +1,22 @@
 package anniechat.task;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /** Represents a task with a description and completion status. */
 public abstract class Task {
+    private static final Pattern TAG_PATTERN =
+            Pattern.compile("(?<!\\S)#[A-Za-z0-9_-]+");
+
     /** Original command or description used to create this task. */
     protected String desc;
 
     /** Whether this task has been marked as completed. */
     protected boolean isDone;
+
+    /** The optional tag associated with this task. */
+    private final String tag;
+
     static int taskCount = 0;
 
     /**
@@ -17,6 +27,7 @@ public abstract class Task {
     public Task(String desc) {
         this.desc = desc;
         isDone = false;
+        tag = extractTag(desc);
         taskCount++;
     }
 
@@ -72,6 +83,29 @@ public abstract class Task {
     }
 
     /**
+     * Returns the optional tag written in this task.
+     *
+     * @return the tag including its {@code #} prefix, or an empty string if
+     *         this task has no tag.
+     */
+    public String getTag() {
+        return tag;
+    }
+
+    /**
+     * Checks whether this task has the supplied tag.
+     *
+     * @param requestedTag tag to look for, including or excluding {@code #}.
+     * @return true if the task has the requested tag, ignoring letter case.
+     */
+    public boolean hasTag(String requestedTag) {
+        String normalizedTag = requestedTag.startsWith("#")
+                ? requestedTag
+                : "#" + requestedTag;
+        return tag.equalsIgnoreCase(normalizedTag);
+    }
+
+    /**
      * Returns the icon representing this task's completion status.
      *
      * @return {@code [x]} if completed, otherwise {@code [ ]}.
@@ -93,4 +127,24 @@ public abstract class Task {
      * @return serialized representation of this task.
      */
     public abstract String toSaveFormat();
+
+    /**
+     * Extracts the one supported tag from the original task command.
+     *
+     * @param taskText original task command.
+     * @return the first tag, or an empty string when none is present.
+     * @throws IllegalArgumentException if more than one tag is present.
+     */
+    private static String extractTag(String taskText) {
+        Matcher matcher = TAG_PATTERN.matcher(taskText);
+        if (!matcher.find()) {
+            return "";
+        }
+
+        String firstTag = matcher.group();
+        if (matcher.find()) {
+            throw new IllegalArgumentException("Only one tag is allowed per task.");
+        }
+        return firstTag;
+    }
 }
