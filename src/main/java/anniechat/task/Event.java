@@ -21,7 +21,7 @@ public class Event extends Task {
         start = day.split("/to")[0];
         end = day.split("/to")[1];
         taskDesc = taskOnly + "(from: " + start
-                + "to: " + end + ")";
+                + " to: " + end + ")";
     }
 
     @Override
