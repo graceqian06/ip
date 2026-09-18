@@ -2,6 +2,8 @@ package anniechat.ui;
 
 import java.util.Scanner;
 
+import anniechat.logic.CommandHandler;
+
 /** Handles input from and output to the command-line user. */
 public class Ui {
     private final Scanner scanner;
@@ -13,7 +15,7 @@ public class Ui {
 
     /** Displays the welcome message. */
     public void showWelcome() {
-        System.out.println("Hello! I'm Anniechat.\nWhat can I do for you?\n");
+        System.out.println(CommandHandler.WELCOME_MESSAGE + "\n");
     }
 
     /**

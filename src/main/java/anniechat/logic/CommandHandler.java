@@ -10,6 +10,10 @@ import anniechat.task.Task;
 
 /** Executes chatbot commands independently of the user interface. */
 public class CommandHandler {
+    /** Shared welcome message used by both the command-line and graphical interfaces. */
+    public static final String WELCOME_MESSAGE =
+            "Meow meow! I'm WhiskerList.\nWhat can I help you with?";
+
     private static final String COMMAND_BYE = "bye";
     private static final String COMMAND_LIST = "list";
     private static final String COMMAND_MARK = "mark";
@@ -20,14 +24,17 @@ public class CommandHandler {
     private static final String COMMAND_DELETE = "delete";
     private static final String COMMAND_FIND = "find";
 
-    private static final String UNKNOWN_COMMAND_MESSAGE = "Sowwy idk what that means :(";
+    private static final String UNKNOWN_COMMAND_MESSAGE =
+            "Meow... I don't recognise that command yet, sowwy!\n"
+                    + "Try list, todo, deadline, event, mark, unmark, delete, find, or bye.";
     private static final String EMPTY_DESCRIPTION_MESSAGE =
-            "OOPS The description of a task cannot be empty.";
+            "Meow! A task description cannot be empty, sowwy.";
     private static final String INVALID_COMMAND_MESSAGE =
-            "sozz idk what that mean";
+            "Meow... I couldn't understand that command. Please check the format, sowwy.";
     private static final String LOAD_ERROR_MESSAGE =
-            "I could not load your saved tasks, so I started with an empty list.";
-    private static final String SAVE_ERROR_MESSAGE = "I could not save your latest changes.";
+            "Meow... I couldn't load your saved tasks, so I started with an empty list.";
+    private static final String SAVE_ERROR_MESSAGE =
+            "Meow... I couldn't save your latest changes, sowwy.";
 
     private final Storage storage;
     private final List<Task> tasks = new ArrayList<>();
@@ -63,7 +70,7 @@ public class CommandHandler {
 
         try {
             return switch (parser.getCommandWord()) {
-            case COMMAND_BYE -> new CommandResult("Byeee! Cya again soon!", true);
+            case COMMAND_BYE -> new CommandResult("Meow for now! See you later!", true);
             case COMMAND_LIST -> listTasks(tasks);
             case COMMAND_MARK -> markTask(parser.getTaskNumber(), true);
             case COMMAND_UNMARK -> markTask(parser.getTaskNumber(), false);
@@ -98,7 +105,7 @@ public class CommandHandler {
             return new CommandResult(SAVE_ERROR_MESSAGE, false);
         }
 
-        String message = "Got it. I've added this task:\n"
+        String message = "Purrfect! I've added this task:\n"
                 + formatTask(task)
                 + "\nNow you have " + tasks.size() + " tasks in the list.";
         return new CommandResult(message, false);
@@ -118,8 +125,8 @@ public class CommandHandler {
         }
 
         String action = done
-                ? "Nice! I've marked this task as done:\n"
-                : "OK, I've marked this task as not done yet:\n";
+                ? "Purrfect! I've marked this task as done:\n"
+                : "Meow, I've marked this task as not done yet:\n";
         return new CommandResult(action + formatTask(task), false);
     }
 
@@ -133,7 +140,7 @@ public class CommandHandler {
             return new CommandResult(SAVE_ERROR_MESSAGE, false);
         }
 
-        String message = "Noted. I've removed this task:\n"
+        String message = "Okii! I've removed this task:\n"
                 + formatTask(task)
                 + "\nNow you have " + tasks.size() + " tasks in the list.";
         return new CommandResult(message, false);

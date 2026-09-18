@@ -38,7 +38,8 @@ public class CommandHandlerTest {
 
         CommandResult result = handler.handle("nonsense");
 
-        assertEquals("Sowwy idk what that means :(", result.getMessage());
+        assertTrue(result.getMessage().contains("Meow..."));
+        assertTrue(result.getMessage().contains("Try list"));
         assertFalse(result.isExitRequested());
     }
 
@@ -49,7 +50,7 @@ public class CommandHandlerTest {
 
         CommandResult result = handler.handle("bye");
 
-        assertEquals("Byeee! Cya again soon!", result.getMessage());
+        assertEquals("Meow for now! See you later!", result.getMessage());
         assertTrue(result.isExitRequested());
     }
 
