@@ -62,7 +62,7 @@ jar {
 }
 
 shadowJar {
-    archiveFileName = 'anniechat.jar'
+    archiveFileName = 'whiskerlist.jar'
 }
 
 run {
