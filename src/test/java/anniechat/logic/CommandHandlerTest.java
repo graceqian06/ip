@@ -55,6 +55,38 @@ public class CommandHandlerTest {
     }
 
     @Test
+    public void handle_markWithoutTaskNumber_returnsInvalidCommandResponse() throws IOException {
+        Path filePath = temporaryDirectory.resolve("tasks.txt");
+        CommandHandler handler = new CommandHandler(new Storage(filePath.toString()));
+
+        CommandResult result = handler.handle("mark");
+
+        assertTrue(result.getMessage().contains("couldn't understand"));
+        assertFalse(result.isExitRequested());
+    }
+
+    @Test
+    public void handle_findWithoutKeyword_returnsInvalidCommandResponse() throws IOException {
+        Path filePath = temporaryDirectory.resolve("tasks.txt");
+        CommandHandler handler = new CommandHandler(new Storage(filePath.toString()));
+
+        CommandResult result = handler.handle("find");
+
+        assertTrue(result.getMessage().contains("couldn't understand"));
+        assertFalse(result.isExitRequested());
+    }
+
+    @Test
+    public void constructor_malformedSavedData_reportsLoadError() throws IOException {
+        Path filePath = temporaryDirectory.resolve("tasks.txt");
+        Files.writeString(filePath, "D | 0 | missing date\n");
+
+        CommandHandler handler = new CommandHandler(new Storage(filePath.toString()));
+
+        assertTrue(handler.getStartupMessage().contains("couldn't load"));
+    }
+
+    @Test
     public void handle_taggedTask_canBeFoundByTag() throws IOException {
         Path filePath = temporaryDirectory.resolve("tasks.txt");
         CommandHandler handler = new CommandHandler(new Storage(filePath.toString()));

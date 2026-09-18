@@ -1,6 +1,7 @@
 package anniechat.logic;
 
 import java.io.IOException;
+import java.time.DateTimeException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,7 +80,8 @@ public class CommandHandler {
             case COMMAND_FIND -> listTasks(parser.findMatchingTasks(tasks));
             default -> new CommandResult(UNKNOWN_COMMAND_MESSAGE, false);
             };
-        } catch (IllegalArgumentException | IndexOutOfBoundsException exception) {
+        } catch (IllegalArgumentException | IndexOutOfBoundsException
+                 | DateTimeException exception) {
             return new CommandResult(INVALID_COMMAND_MESSAGE, false);
         }
     }
@@ -88,7 +90,8 @@ public class CommandHandler {
     private void loadTasks() {
         try {
             tasks.addAll(storage.load());
-        } catch (IOException | IllegalArgumentException exception) {
+        } catch (IOException | IllegalArgumentException | IndexOutOfBoundsException
+                 | DateTimeException exception) {
             startupMessage = LOAD_ERROR_MESSAGE;
         }
     }
